@@ -24,7 +24,7 @@ public class SecurityConfig {
         return http
                 .authorizeHttpRequests(req ->
                             req
-                                    .requestMatchers("/auth/test")
+                                    .requestMatchers("/auth/info")
                                         .authenticated()
                                     .requestMatchers("/**")
                                         .permitAll()

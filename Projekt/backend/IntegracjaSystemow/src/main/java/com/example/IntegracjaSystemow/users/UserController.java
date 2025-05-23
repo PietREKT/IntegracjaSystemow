@@ -1,6 +1,5 @@
 package com.example.IntegracjaSystemow.users;
 
-import org.hibernate.NonUniqueObjectException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -31,7 +30,7 @@ public class UserController {
         try {
             String token = userService.register(userDto.getUsername(), userDto.getPassword());
             return ResponseEntity.ok(token);
-        } catch (NonUniqueObjectException ex){
+        } catch (IllegalArgumentException ex){
             return ResponseEntity.badRequest().body("Username already in use!");
         }
     }

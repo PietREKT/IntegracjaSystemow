@@ -32,23 +32,28 @@ public class UserService implements UserDetailsService {
         return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
-    public String login(String username, String password) throws BadCredentialsException{
+    public String login(String username, String password) throws BadCredentialsException {
         User user = getUserByUsername(username);
-        if (passwordEncoder.matches(password, user.getPassword())){
+        if (passwordEncoder.matches(password, user.getPassword())) {
             return jWTService.generateToken(user);
         } else {
             throw new BadCredentialsException("Invalid username or password");
         }
     }
 
-    public String register(String username, String password) throws NonUniqueObjectException{
-            password = passwordEncoder.encode(password);
-            User user = new User(username, password);
+    public String register(String username, String password) throws NonUniqueObjectException {
+        password = passwordEncoder.encode(password);
+        User user = new User(username, password);
+        try {
+            getUserByUsername(username);
+            throw new IllegalArgumentException();
+        } catch (UsernameNotFoundException ex){
             userRepository.save(user);
             return jWTService.generateToken(user);
+        }
     }
 
-    public User getUserFromToken(String token) throws UsernameNotFoundException{
+    public User getUserFromToken(String token) throws UsernameNotFoundException {
         String username = jWTService.getUsername(token);
         return getUserByUsername(username);
     }

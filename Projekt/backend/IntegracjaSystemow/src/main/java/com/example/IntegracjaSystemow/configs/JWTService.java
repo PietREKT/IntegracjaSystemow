@@ -2,6 +2,7 @@ package com.example.IntegracjaSystemow.configs;
 
 import com.example.IntegracjaSystemow.users.User;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.log4j.Log4j2;
@@ -43,7 +44,7 @@ public class JWTService {
                 .compact();
     }
 
-    private Claims extractAllClaims(String token){
+    private Claims extractAllClaims(String token) throws ExpiredJwtException {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -51,7 +52,7 @@ public class JWTService {
                 .getPayload();
     }
 
-    public String getUsername(String token){
+    public String getUsername(String token) throws ExpiredJwtException{
         return extractAllClaims(token).getSubject();
     }
 }
