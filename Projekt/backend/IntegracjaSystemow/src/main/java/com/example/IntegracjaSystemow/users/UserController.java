@@ -1,48 +1,44 @@
 package com.example.IntegracjaSystemow.users;
 
-import jakarta.servlet.http.HttpServletRequest;
+import org.hibernate.NonUniqueObjectException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
 public class UserController {
 
-    private final AuthenticationManager authenticationManager;
+    private final UserService userService;
 
-      public UserController(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
+    public UserController( UserService userService) {
+        this.userService = userService;
     }
-
-
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserDto userdto, HttpServletRequest request) {
-        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(userdto.getUsername(), userdto.getPassword());
+    public ResponseEntity<?> login(@RequestBody UserDto userdto) {
         try {
-            Authentication auth = authenticationManager.authenticate(token);
-            SecurityContextHolder.getContext().setAuthentication(auth);
-
-            request.getSession(true)
-                    .setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
-                            SecurityContextHolder.getContext());
-
-            return ResponseEntity.ok("Logged in as " + auth.getName());
-        } catch (AuthenticationException ex){
-            return ResponseEntity.status(401).body("Bad credentials");
+            String token = userService.login(userdto.getUsername(), userdto.getPassword());
+            return ResponseEntity.ok(token);
+        } catch (BadCredentialsException ex){
+            return ResponseEntity.status(401).body("Invalid login or password");
         }
     }
-    @GetMapping("")
-    public ResponseEntity<?> test() {
-        User auth = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ResponseEntity.ok("Hello " + auth.getUsername());
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody UserDto userDto){
+        try {
+            String token = userService.register(userDto.getUsername(), userDto.getPassword());
+            return ResponseEntity.ok(token);
+        } catch (NonUniqueObjectException ex){
+            return ResponseEntity.badRequest().body("Username already in use!");
+        }
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> info(@RequestHeader(HttpHeaders.AUTHORIZATION) String header) {
+        return ResponseEntity.ok(userService.getUserFromToken(header.replace("Bearer ", "")));
     }
 
     @GetMapping("/test")

@@ -24,7 +24,10 @@ public class House {
 
     private LocalDate date;
 
-    private enum type{
+    @Enumerated(EnumType.STRING)
+    private Type house_type;
+
+    private enum Type{
         HOUSING_BLOCK,
         APARTMENT_BUILDING,
         TENEMENT
