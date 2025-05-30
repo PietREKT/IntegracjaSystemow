@@ -1,5 +1,6 @@
 package com.example.IntegracjaSystemow.users;
 
+import com.example.IntegracjaSystemow.Houses.House;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,6 +26,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     @JsonIgnore
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private List<House> houses;
 
     public User(String username, String password) {
         this.username = username;
