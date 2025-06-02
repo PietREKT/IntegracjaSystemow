@@ -28,6 +28,7 @@ public class User implements UserDetails {
     private String password;
 
     @OneToMany(mappedBy = "user")
+    @JsonIgnore
     private List<House> houses;
 
     public User(String username, String password) {

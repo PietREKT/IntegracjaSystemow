@@ -10,9 +10,7 @@ import java.io.Serializable;
 @Value
 public class HouseDto implements Serializable {
     String city;
-    Double price_per_meter;
+    Double pricePerMeter;
     Double area;
-    House.Type house_type;
-    String quarter;
     String year;
 }

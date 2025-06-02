@@ -26,6 +26,12 @@ public class SecurityConfig {
                             req
                                     .requestMatchers("/auth/info")
                                         .authenticated()
+                                    .requestMatchers("/api/houses")
+                                        .permitAll()
+                                    .requestMatchers("/api/houses/stats/**")
+                                        .permitAll()
+                                    .requestMatchers("/api/houses/**")
+                                        .authenticated()
                                     .requestMatchers("/**")
                                         .permitAll()
                 )

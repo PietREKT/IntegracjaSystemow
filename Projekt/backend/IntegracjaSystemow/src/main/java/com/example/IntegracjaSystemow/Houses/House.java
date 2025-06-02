@@ -2,10 +2,9 @@ package com.example.IntegracjaSystemow.Houses;
 
 import com.example.IntegracjaSystemow.users.User;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -19,29 +18,24 @@ public class House {
 
     private String city;
 
-    private Double price_per_meter;
+    private Double pricePerMeter;
 
     private Double area;
 
-    private LocalDate date;
-
-    @Enumerated(EnumType.STRING)
-    private Type house_type;
+    private Integer transactionYear;
 
     @ManyToOne
     User user;
 
+    @Setter(AccessLevel.NONE)
+    private Double priceTotal;
 
-    public Double getPriceTotal(){
-        if (price_per_meter == null || area == null){
-            return null;
+    @PrePersist
+    public void setPriceTotal(){
+        if (pricePerMeter == null || area == null){
+            priceTotal = null;
+            return;
         }
-        return price_per_meter * area;
-    }
-
-    protected enum Type{
-        HOUSING_BLOCK,
-        APARTMENT_BUILDING,
-        TENEMENT
+        priceTotal = pricePerMeter * area;
     }
 }

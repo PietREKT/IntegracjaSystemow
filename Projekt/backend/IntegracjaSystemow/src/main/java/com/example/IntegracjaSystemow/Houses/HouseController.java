@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+
 @Controller
 @RequestMapping("/api/houses")
 public class HouseController {
@@ -21,15 +22,44 @@ public class HouseController {
 
     @PostMapping("/add")
     public ResponseEntity<?> addHouse(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization, @RequestBody HouseDto dto){
-        User user = userService.getUserFromToken(authorization.replace("Bearer ", ""));
+        User user = userService.getUserFromToken(authorization);
         House house = houseService.createUserHouse(dto, user);
 
         return ResponseEntity.ok(house);
     }
 
+    @GetMapping
+    public ResponseEntity<?> getHousesPaged(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String auth, @RequestParam int page, @RequestParam(required = false) Integer elementsPerPage, @RequestParam(required = false) String sorting, @RequestParam(required = false) String order){
+        User user = userService.getUserFromToken(auth);
+        return ResponseEntity.ok(houseService.getPage(user, page, elementsPerPage, sorting, order));
+    }
+
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> deleteHouse(@PathVariable String id){
-        houseService.deleteHouse(id);
+    public ResponseEntity<?> deleteHouse(@PathVariable Long id, @RequestHeader(HttpHeaders.AUTHORIZATION) String auth){
+        try {
+            User user = userService.getUserFromToken(auth);
+            houseService.deleteHouse(id, user);
+        } catch (IllegalArgumentException ex){
+            return ResponseEntity.status(403).body(ex.getMessage());
+        }
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/stats/price")
+    public ResponseEntity<?> getAveragePricesAndYears(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String auth){
+        User user = userService.getUserFromToken(auth);
+        return ResponseEntity.ok(houseService.getAveragePricePerYear(user));
+    }
+
+    @GetMapping("/stats/count")
+    public ResponseEntity<?> getTransactionsPerYear(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String auth){
+        User user = userService.getUserFromToken(auth);
+        return ResponseEntity.ok(houseService.getTransactionsPerYear(user));
+    }
+
+    @GetMapping("/stats/cities")
+    public ResponseEntity<?> getAveragePriceByCity(@RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String auth){
+        User user = userService.getUserFromToken(auth);
+        return ResponseEntity.ok(houseService.getAveragePricePerCity(user));
     }
 }

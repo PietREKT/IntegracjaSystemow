@@ -1,11 +1,12 @@
 package com.example.IntegracjaSystemow.configs;
 
 import com.example.IntegracjaSystemow.Houses.HouseService;
-import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PostStartup implements CommandLineRunner {
+public class PostStartup {
 
 
     private final HouseService houseService;
@@ -14,9 +15,11 @@ public class PostStartup implements CommandLineRunner {
         this.houseService = houseService;
     }
 
-    @Override
-    public void run(String... args) throws Exception {
-        houseService.readFileFromApi();
-        houseService.readFile();
+    @EventListener(ApplicationReadyEvent.class)
+    public void run() throws Exception {
+        if (houseService.isRepositoryEmpty()) {
+            houseService.readFileFromApi();
+            houseService.readFile();
+        }
     }
 }

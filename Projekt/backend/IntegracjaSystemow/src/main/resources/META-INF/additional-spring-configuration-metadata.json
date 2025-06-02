@@ -9,5 +9,15 @@
       "name": "jwt.expiration",
       "type": "java.lang.Integer",
       "description": "Expiration time for JWT Token in minutes."
+    },
+    {
+      "name": "spring.application.default_elements_per_page",
+      "type": "java.lang.Integer",
+      "description": "Default value for pagination."
+    },
+    {
+      "name": "spring.application.min_year",
+      "type": "java.lang.Long",
+      "description": "Description for spring.application.min_year."
     }
   ] }

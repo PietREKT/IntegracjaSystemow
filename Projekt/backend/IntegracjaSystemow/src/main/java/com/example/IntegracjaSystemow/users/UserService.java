@@ -47,14 +47,16 @@ public class UserService implements UserDetailsService {
         try {
             getUserByUsername(username);
             throw new IllegalArgumentException();
-        } catch (UsernameNotFoundException ex){
+        } catch (UsernameNotFoundException ex) {
             userRepository.save(user);
             return jWTService.generateToken(user);
         }
     }
 
     public User getUserFromToken(String token) throws UsernameNotFoundException {
-        String username = jWTService.getUsername(token);
+        if (token == null)
+            return null;
+        String username = jWTService.getUsername(token.replace("Bearer ", ""));
         return getUserByUsername(username);
     }
 }
