@@ -5,8 +5,8 @@
       <nav class="flex items-center gap-4">
         <RouterLink to="/" class="text-blue-600">Strona główna</RouterLink>
         <RouterLink to="/houses" class="text-blue-600">Mieszkania</RouterLink>
-        <RouterLink to="/upload" class="text-blue-600">Dodaj dane</RouterLink>
         <RouterLink to="/login" class="text-blue-600 font-semibold">Zaloguj się</RouterLink>
+        <RouterLink to="/upload" class="text-blue-600">Dodaj dane</RouterLink>
       </nav>
     </header>
 
@@ -16,3 +16,6 @@
   </div>
 </template>
 
+<script setup>
+import { RouterView, RouterLink } from 'vue-router'
+</script>

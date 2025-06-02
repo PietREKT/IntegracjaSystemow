@@ -16,6 +16,7 @@ public class PostStartup implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        houseService.getFileByApi();
+        houseService.readFileFromApi();
+        houseService.readFile();
     }
 }

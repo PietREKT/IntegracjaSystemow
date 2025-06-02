@@ -1,5 +1,6 @@
 package com.example.IntegracjaSystemow.Houses;
 
+import com.example.IntegracjaSystemow.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,9 +28,20 @@ public class House {
     @Enumerated(EnumType.STRING)
     private Type house_type;
 
-    private enum Type{
+    @ManyToOne
+    User user;
+
+
+    public Double getPriceTotal(){
+        if (price_per_meter == null || area == null){
+            return null;
+        }
+        return price_per_meter * area;
+    }
+
+    protected enum Type{
         HOUSING_BLOCK,
         APARTMENT_BUILDING,
         TENEMENT
-    };
+    }
 }
