@@ -2,7 +2,7 @@
     application:
       name: IntegracjaSystemow
       default_elements_per_page: 20
-      min_year: 2020
+      min_year: 1950
     datasource:
       driver-class-name: org.h2.Driver
       username: sa
