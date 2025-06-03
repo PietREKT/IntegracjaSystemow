@@ -1,42 +1,104 @@
 <template>
   <div>
     <h2 class="text-2xl font-semibold mb-4">Panel wizualizacji</h2>
+
+    <!-- Wybór zakresu lat -->
+    <div class="mb-6 flex gap-4 items-center">
+      <label class="font-medium">Zakres danych:</label>
+      <label class="flex gap-2 items-center">
+        <input type="radio" name="range" value="2010" v-model="minYear" />
+        od 2010
+      </label>
+      <label class="flex gap-2 items-center">
+        <input type="radio" name="range" value="2018" v-model="minYear" />
+        od 2018
+      </label>
+      <label class="flex gap-2 items-center">
+        <input type="radio" name="range" value="2020" v-model="minYear" />
+        od 2020
+      </label>
+    </div>
+
+    <!-- Wykresy -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white rounded shadow p-4">
+      <div class="bg-white p-4 rounded shadow">
         <h3 class="font-semibold mb-2">Średnie ceny mieszkań (lata)</h3>
-        <LineChart :data="priceOverYears" x-field="year" y-field="price" />
+        <LineChart :data="avgPricesByYear" x-field="year" y-field="price" />
       </div>
-      <div class="bg-white rounded shadow p-4">
-        <h3 class="font-semibold mb-2">Stopy procentowe (lata)</h3>
-        <LineChart :data="ratesOverYears" x-field="year" y-field="rate" />
+      <div class="bg-white p-4 rounded shadow">
+        <h3 class="font-semibold mb-2">Średnie stopy procentowe (lata)</h3>
+        <LineChart :data="avgRatesByYear" x-field="year" y-field="rate" />
       </div>
-      <div class="bg-white rounded shadow p-4">
-        <h3 class="font-semibold mb-2">Ceny mieszkań w miastach</h3>
-        <BarChart :data="cityPrices" x-field="city" y-field="price" />
+      <div class="bg-white p-4 rounded shadow">
+        <h3 class="font-semibold mb-2">Średnia cena za m² w miastach (ostatni rok)</h3>
+        <BarChart :data="avgPriceByCity" x-field="city" y-field="price" />
       </div>
-      <div class="bg-white rounded shadow p-4">
-        <h3 class="font-semibold mb-2">Wzrost cen rok do roku</h3>
-        <BarChart :data="priceGrowth" x-field="year" y-field="growth" />
+      <div class="bg-white p-4 rounded shadow">
+        <h3 class="font-semibold mb-2">Roczna dynamika cen (%)</h3>
+        <BarChart :data="priceGrowthYearly" x-field="year" y-field="growth" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue'
 import LineChart from '../components/LineChart.vue'
 import BarChart from '../components/BarChart.vue'
+import {
+  getAvgPricesByYear,
+  getTransactionsPerYear,
+  getAvgPriceByCity,
+} from '../api/houses'
 
+const avgPricesByYear = ref([])
+const avgRatesByYear = ref([])
+const avgPriceByCity = ref([])
+const priceGrowthYearly = ref([])
+const minYear = ref('2010')
 
-const priceOverYears = [
-  { year: '2018', price: 7000 },
-  { year: '2019', price: 7400 },
-  { year: '2020', price: 7800 },
-  { year: '2021', price: 8300 },
-  { year: '2022', price: 8900 },
-  { year: '2023', price: 9500 },
-]
+watch(minYear, reloadData)
 
-const ratesOverYears = [
+async function reloadData() {
+  try {
+    const prices = await getAvgPricesByYear()
+    avgPricesByYear.value = Object.entries(prices)
+        .filter(([year]) => Number(year) >= Number(minYear.value))
+        .map(([year, price]) => ({
+          year: String(year),
+          price: Math.round(Number(price) / 1000)
+        }))
+
+    const counts = await getTransactionsPerYear()
+    const sortedCounts = Object.entries(counts)
+        .filter(([year]) => Number(year) >= Number(minYear.value))
+        .map(([year, count]) => ({ year: String(year), value: Number(count) }))
+        .sort((a, b) => a.year - b.year)
+
+    priceGrowthYearly.value = sortedCounts.map((curr, i, arr) => {
+      if (i === 0) return { year: curr.year, growth: 0 }
+      const prev = arr[i - 1]
+      const growth = ((curr.value - prev.value) / prev.value) * 100
+      return { year: curr.year, growth: Math.round(Number(growth)) }
+    })
+
+    const cities = await getAvgPriceByCity()
+    avgPriceByCity.value = Object.entries(cities)
+        .map(([city, price]) => ({
+          city,
+          price: Math.round(Number(price) / 1000)
+        }))
+        .sort((a, b) => b.price - a.price)
+        .slice(0, 10)
+
+  } catch (error) {
+    console.error('Błąd przy ładowaniu danych:', error)
+  }
+}
+
+onMounted(reloadData)
+
+avgRatesByYear.value = [
   { year: '2018', rate: 1.5 },
   { year: '2019', rate: 1.5 },
   { year: '2020', rate: 0.1 },
@@ -44,20 +106,5 @@ const ratesOverYears = [
   { year: '2022', rate: 6.75 },
   { year: '2023', rate: 5.75 },
 ]
-
-const cityPrices = [
-  { city: 'Warszawa', price: 11000 },
-  { city: 'Kraków', price: 10000 },
-  { city: 'Gdańsk', price: 9500 },
-  { city: 'Wrocław', price: 9200 },
-  { city: 'Poznań', price: 8800 },
-]
-
-const priceGrowth = [
-  { year: '2019', growth: 6 },
-  { year: '2020', growth: 5 },
-  { year: '2021', growth: 7 },
-  { year: '2022', growth: 8 },
-  { year: '2023', growth: 6 },
-]
 </script>
+

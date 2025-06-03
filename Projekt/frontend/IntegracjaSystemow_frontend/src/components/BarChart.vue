@@ -1,30 +1,28 @@
 <template>
-  <canvas ref="canvas"></canvas>
+  <Bar :data="chartData" :options="{ responsive: true }" />
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from 'vue'
-import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title } from 'chart.js'
+import { computed } from 'vue'
+import { Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  Title, Tooltip, Legend,
+  BarElement, CategoryScale, LinearScale
+} from 'chart.js'
 
-Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title)
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 const props = defineProps(['data', 'xField', 'yField'])
-const canvas = ref(null)
-let chartInstance
 
-onMounted(() => {
-  chartInstance = new Chart(canvas.value, {
-    type: 'bar',
-    data: {
-      labels: props.data.map(d => d[props.xField]),
-      datasets: [{
-        label: props.yField,
-        data: props.data.map(d => d[props.yField]),
-        backgroundColor: 'rgb(59, 130, 246)'
-      }]
+const chartData = computed(() => ({
+  labels: props.data.map(item => item[props.xField]),
+  datasets: [
+    {
+      label: props.yField,
+      data: props.data.map(item => item[props.yField]),
+      backgroundColor: '#3b82f6',
     }
-  })
-})
-
-watch(() => props.data, () => chartInstance?.update(), { deep: true })
+  ]
+}))
 </script>
