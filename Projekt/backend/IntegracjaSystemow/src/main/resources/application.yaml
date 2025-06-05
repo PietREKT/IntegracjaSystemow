@@ -3,23 +3,3 @@
       name: IntegracjaSystemow
       default_elements_per_page: 20
       min_year: 1950
-    datasource:
-      driver-class-name: org.h2.Driver
-      username: sa
-      password:
-      url: "jdbc:h2:mem:testdb"
-    h2:
-      console:
-        enabled: true
-    jpa:
-      hibernate:
-        ddl-auto: create
-      show-sql: false
-      database-platform: org.hibernate.dialect.H2Dialect
-      defer-datasource-initialization: false
-    sql:
-      init:
-        mode: always
-  jwt:
-    key: "eavjaebvjaebvjaekjaekvnaejvnkjaejkjfnakjebvjeab"
-    expiration: 5

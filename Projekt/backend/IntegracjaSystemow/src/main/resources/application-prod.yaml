@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: IntegracjaSystemow
+    default_elements_per_page: 20
+    min_year: 1950
+
+  datasource:
+    url: jdbc:postgresql://${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  sql:
+    init:
+      mode: always
+      platform: POSTGRESQL
+jwt:
+  key: ${JWT_KEY}
+  expiration: 45
