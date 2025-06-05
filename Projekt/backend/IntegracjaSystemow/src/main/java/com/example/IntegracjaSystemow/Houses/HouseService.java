@@ -154,6 +154,10 @@ public class HouseService {
                     continue;
                 }
                 String[] dateComponents = row[0].split("\\s+");
+
+                if (Integer.parseInt(dateComponents[1]) < minYear || Integer.parseInt(dateComponents[1]) > LocalDate.now().getYear())
+                    continue;
+
                 houseRepository.save(createHouse(row[1], Double.parseDouble(row[3]), dateComponents[1]));
                 counter++;
             }
@@ -172,7 +176,12 @@ public class HouseService {
             reader.readNext();
             int counter = 0, error_counter = 0;
             while ((row = reader.readNext()) != null) {
-                House house = createHouse(row[2], Double.parseDouble(row[7]) / Double.parseDouble(row[9]), row[10].substring(0, row[10].indexOf('.')));
+                String year = row[10].substring(0, row[10].indexOf('.'));
+                if (Double.parseDouble(row[9]) > 1000
+                        || Integer.parseInt(year) < minYear || Integer.parseInt(year) > LocalDate.now().getYear())
+                    continue;
+
+                House house = createHouse(row[2], Double.parseDouble(row[7]) / Double.parseDouble(row[9]), year);
                 house.setArea(Double.parseDouble(row[9]));
                 houseRepository.save(house);
                 counter++;

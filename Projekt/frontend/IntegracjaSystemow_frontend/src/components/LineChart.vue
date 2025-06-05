@@ -13,13 +13,13 @@ import {
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement)
 
-const props = defineProps(['data', 'xField', 'yField'])
+const props = defineProps(['data', 'xField', 'yField', 'yDesc'])
 
 const chartData = computed(() => ({
   labels: props.data.map(item => item[props.xField]),
   datasets: [
     {
-      label: props.yField,
+      label: props.yDesc,
       data: props.data.map(item => item[props.yField]),
       borderColor: 'blue',
       backgroundColor: 'lightblue',

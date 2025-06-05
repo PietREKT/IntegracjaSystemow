@@ -27,6 +27,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { loginUser } from '../api/auth.js'
 import { useAuth } from '../api/useAuth.js'
+import Note from "../note.js";
 
 const username = ref('')
 const password = ref('')
@@ -37,10 +38,10 @@ async function loginHandler() {
   try {
     const token = await loginUser(username.value, password.value)
     login(token)
-    alert('Zalogowano pomyślnie!')
-    router.push('/') // <-- przekierowanie na stronę główną
+    Note().success('Zalogowano pomyślnie!')
+    await router.push('/')
   } catch (error) {
-    alert('Błąd logowania: ' + (error.response?.data || error.message))
+    Note().error('Błąd logowania: ' + (error.response?.data || error.message))
   }
 }
 </script>

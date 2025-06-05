@@ -2,6 +2,8 @@ package com.example.IntegracjaSystemow.Houses;
 
 import com.example.IntegracjaSystemow.users.User;
 import com.example.IntegracjaSystemow.users.UserService;
+import jakarta.validation.Valid;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/api/houses")
+@Log4j2
 public class HouseController {
 
     private final HouseService houseService;
@@ -21,10 +24,10 @@ public class HouseController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addHouse(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization, @RequestBody HouseDto dto){
+    public ResponseEntity<?> addHouse(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization, @RequestBody @Valid HouseDto dto){
         User user = userService.getUserFromToken(authorization);
         House house = houseService.createUserHouse(dto, user);
-
+        log.info("Added new house: {}", house.toString());
         return ResponseEntity.ok(house);
     }
 
@@ -39,6 +42,7 @@ public class HouseController {
         try {
             User user = userService.getUserFromToken(auth);
             houseService.deleteHouse(id, user);
+            log.info("Deleted house with ID: {}", id);
         } catch (IllegalArgumentException ex){
             return ResponseEntity.status(403).body(ex.getMessage());
         }

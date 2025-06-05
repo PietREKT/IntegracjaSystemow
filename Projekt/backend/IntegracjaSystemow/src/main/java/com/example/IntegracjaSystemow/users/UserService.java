@@ -55,18 +55,12 @@ public class UserService implements UserDetailsService {
 
     public User getUserFromToken(String token) throws UsernameNotFoundException {
         if (token == null) {
-            System.out.println("❌ Token pusty");
             return null;
         }
-
-        System.out.println("➡️ TOKEN INPUT: " + token);
-
         try {
             String username = jWTService.getUsername(token.replace("Bearer ", ""));
-            System.out.println("✅ USERNAME FROM TOKEN: " + username);
             return getUserByUsername(username);
         } catch (Exception e) {
-            System.out.println("❌ Błąd odczytu tokena: " + e.getMessage());
             return null;
         }
     }

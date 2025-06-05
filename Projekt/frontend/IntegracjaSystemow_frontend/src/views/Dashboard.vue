@@ -23,19 +23,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="bg-white p-4 rounded shadow">
         <h3 class="font-semibold mb-2">Średnie ceny mieszkań (lata)</h3>
-        <LineChart :data="avgPricesByYear" x-field="year" y-field="price" />
-      </div>
-      <div class="bg-white p-4 rounded shadow">
-        <h3 class="font-semibold mb-2">Średnie stopy procentowe (lata)</h3>
-        <LineChart :data="avgRatesByYear" x-field="year" y-field="rate" />
+        <LineChart :data="avgPricesByYear" x-field="year" y-field="price" y-desc="Cena"/>
       </div>
       <div class="bg-white p-4 rounded shadow">
         <h3 class="font-semibold mb-2">Średnia cena za m² w miastach (ostatni rok)</h3>
-        <BarChart :data="avgPriceByCity" x-field="city" y-field="price" />
-      </div>
-      <div class="bg-white p-4 rounded shadow">
-        <h3 class="font-semibold mb-2">Roczna dynamika cen (%)</h3>
-        <BarChart :data="priceGrowthYearly" x-field="year" y-field="growth" />
+        <BarChart :data="avgPriceByCity" x-field="city" y-field="price" y-desc="Cena"/>
       </div>
     </div>
   </div>
@@ -62,11 +54,12 @@ watch(minYear, reloadData)
 async function reloadData() {
   try {
     const prices = await getAvgPricesByYear()
+    avgPricesByYear.value = prices;
     avgPricesByYear.value = Object.entries(prices)
         .filter(([year]) => Number(year) >= Number(minYear.value))
         .map(([year, price]) => ({
           year: String(year),
-          price: Math.round(Number(price) / 1000)
+          price: Number(price)
         }))
 
     const counts = await getTransactionsPerYear()
@@ -86,10 +79,9 @@ async function reloadData() {
     avgPriceByCity.value = Object.entries(cities)
         .map(([city, price]) => ({
           city,
-          price: Math.round(Number(price) / 1000)
+          price: Number(price)
         }))
         .sort((a, b) => b.price - a.price)
-        .slice(0, 10)
 
   } catch (error) {
     console.error('Błąd przy ładowaniu danych:', error)
@@ -97,14 +89,5 @@ async function reloadData() {
 }
 
 onMounted(reloadData)
-
-avgRatesByYear.value = [
-  { year: '2018', rate: 1.5 },
-  { year: '2019', rate: 1.5 },
-  { year: '2020', rate: 0.1 },
-  { year: '2021', rate: 0.25 },
-  { year: '2022', rate: 6.75 },
-  { year: '2023', rate: 5.75 },
-]
 </script>
 

@@ -16,7 +16,7 @@
       </nav>
     </header>
 
-    <main class="p-4">
+    <main class="px-4 py-2">
       <RouterView />
     </main>
   </div>

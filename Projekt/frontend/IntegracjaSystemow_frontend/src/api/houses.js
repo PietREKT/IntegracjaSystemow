@@ -30,6 +30,7 @@ export async function getAvgPricesByYear() {
         'http://localhost:8080/api/houses/stats/price',
         getAuthHeaders()
     )
+    console.log(response.data)
     return response.data
 }
 

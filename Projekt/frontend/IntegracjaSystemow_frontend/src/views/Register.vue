@@ -17,24 +17,28 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { registerUser } from '../api/auth.js'
+import Note from "../note.js";
+import {useAuth} from "../api/useAuth.js";
 
 const name = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const router = useRouter()
+const { login } = useAuth()
 
 async function register() {
   if (password.value !== confirmPassword.value) {
-    alert('Hasła się nie zgadzają!')
+    Note().error('Hasła się nie zgadzają!')
     return
   }
 
   try {
-    await registerUser(name.value, password.value)
-    alert('Rejestracja zakończona sukcesem!')
-    router.push('/login')
+    let token = await registerUser(name.value, password.value)
+    login(token)
+    Note().success('Rejestracja zakończona sukcesem!')
+    await router.push('/')
   } catch (error) {
-    alert('Błąd rejestracji: ' + (error.response?.data || error.message))
+    Note().error('Błąd rejestracji: ' + (error.response?.data || error.message))
   }
 }
 </script>

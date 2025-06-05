@@ -1,4 +1,15 @@
-FROM ubuntu:latest
-LABEL authors="Pjoter"
+FROM node:lts-alpine
 
-ENTRYPOINT ["top", "-b"]
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+RUN npm run build
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]

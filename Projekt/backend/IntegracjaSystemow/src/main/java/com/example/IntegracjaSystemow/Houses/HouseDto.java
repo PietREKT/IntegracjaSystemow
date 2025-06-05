@@ -1,5 +1,7 @@
 package com.example.IntegracjaSystemow.Houses;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 
 import java.io.Serializable;
@@ -9,8 +11,12 @@ import java.io.Serializable;
  */
 @Value
 public class HouseDto implements Serializable {
+    @NotBlank
     String city;
+    @NotNull
     Double pricePerMeter;
+    @NotNull
     Double area;
+    @NotBlank
     String year;
 }
