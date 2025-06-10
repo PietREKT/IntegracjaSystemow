@@ -7,10 +7,9 @@ RUN mvn clean package -DskipTests
 #Buduj obraz
 FROM openjdk:23-jdk
 
-#Create a separate user for safety
+#Dodatkowy użytkownik dla bezpieczeństwa
 RUN groupadd spring && useradd -g spring spring
 
-#Create a directory for a database
 RUN mkdir -p /data && chown -R spring:spring /data
 
 USER spring:spring
